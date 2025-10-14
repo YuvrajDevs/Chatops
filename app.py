@@ -1,5 +1,4 @@
 import os
-import re
 import requests
 from slack_bolt import App
 from slack_bolt.adapter.socket_mode import SocketModeHandler
@@ -18,12 +17,15 @@ app = App(token=SLACK_BOT_TOKEN)
 @app.event("app_mention")
 def handle_mention(body, say):
     message_text = body["event"]["text"]
-    command_text = message_text.split('>')[1].strip()
+    # We get a list of words after the bot's mention, e.g., ['build', 'api-test-build']
+    parts = message_text.split('>')[1].strip().lower().split()
+    
+    # The first word is the command itself
+    command = parts[0] if parts else ""
 
     # --- Logic for the "build" command ---
-    if command_text.lower().startswith("build"):
-        parts = command_text.split()
-        if len(parts) > 1:
+    if command == "build":
+        if len(parts) >= 2:
             job_name = parts[1]
             say(f"✅ Okay, triggering a build for '{job_name}'...")
             jenkins_job_url = f"{JENKINS_URL}/job/{job_name}/build"
@@ -38,13 +40,11 @@ def handle_mention(body, say):
         else:
             say("Usage: `build <job-name>`")
 
-    # --- NEW: Logic for the "get last build" command ---
-    elif command_text.lower().startswith("get last build"):
-        parts = command_text.split()
-        if len(parts) > 3:
-            job_name = parts[3]
+    # --- NEW: Logic for the "get-last-build" command ---
+    elif command == "get-last-build":
+        if len(parts) >= 2:
+            job_name = parts[1]
             say(f"🔎 Checking status for the last build of '{job_name}'...")
-            # This is the new Jenkins API endpoint we are using
             jenkins_job_url = f"{JENKINS_URL}/job/{job_name}/lastBuild/api/json"
             try:
                 response = requests.get(jenkins_job_url, auth=(JENKINS_USER, JENKINS_TOKEN))
@@ -59,11 +59,11 @@ def handle_mention(body, say):
             except Exception as e:
                 say(f"An error occurred: {e}")
         else:
-            say("Usage: `get last build <job-name>`")
+            say("Usage: `get-last-build <job-name>`")
 
     # --- Default reply if no command is matched ---
     else:
-        say("Hello! Try `build <job-name>` or `get last build <job-name>`")
+        say(f"Hello! I understand the following commands:\n• `build <job-name>`\n• `get-last-build <job-name>`")
 
 # --- Starts your app using Socket Mode ---
 if __name__ == "__main__":

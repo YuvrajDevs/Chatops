@@ -16,7 +16,7 @@ pipeline {
         stage('Run Tests') {
             steps {
                 script {
-                    docker.image('python:3.11-slim').inside {
+                    docker.image('python:3.11-slim').inside('-u root') {
                         sh 'pip install --no-cache-dir -r requirements.txt'
                         sh 'pytest'
                     }

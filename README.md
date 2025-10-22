@@ -154,6 +154,6 @@ Your stack is now running. You can verify the services are up:
 
 For a more in-depth guide covering advanced configuration, troubleshooting, and detailed explanations of the pipeline and code, please refer to the full project documentation.
 
-[**Detailed Project Documentation**](https://link)
+[**Detailed Project Documentation**]([https://link](https://drive.google.com/file/d/1bHPcqiIouGlt0vXt-7_LHEaUgbcbIili/view?usp=sharing))
 
 <br>
